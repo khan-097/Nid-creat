@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>বাংলাদেশ NID কার্ড ফিলার</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f4f4; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        h1 { text-align: center; color: #c8102e; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; }
+        button { padding: 15px 30px; font-size: 18px; margin: 10px 5px; border: none; border-radius: 8px; cursor: pointer; }
+        .generate-btn { background: #c8102e; color: white; }
+        .download-btn { background: #006600; color: white; }
+        .preview { margin: 30px 0; text-align: center; border: 3px solid #ddd; border-radius: 12px; overflow: hidden; background: #fff; }
+        canvas { max-width: 100%; height: auto; box-shadow: 0 5px 20px rgba(0,0,0,0.2); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🇧🇩 বাংলাদেশ জাতীয় পরিচয় পত্র ফিলার</h1>
+        
+        <div class="form-group">
+            <label>বাংলা নাম:</label>
+            <input type="text" id="banglaName" placeholder="মোঃ যুনাইদ খান" value="মোঃ যুনাইদ খান">
+        </div>
+        
+        <div class="form-group">
+            <label>ইংরেজি নাম:</label>
+            <input type="text" id="englishName" placeholder="MD. JUNAID KHAN" value="MD. JUNAID KHAN">
+        </div>
+        
+        <div class="form-group">
+            <label>জন্ম তারিখ (Date of Birth):</label>
+            <input type="text" id="dob" placeholder="24 Sep 2006" value="24 Sep 2006">
+        </div>
+        
+        <div class="form-group">
+            <label>এনআইডি নম্বর (ID NO):</label>
+            <input type="text" id="nid" placeholder="8724907137" value="8724907137">
+        </div>
+
+        <center>
+            <button class="generate-btn" onclick="generateCard()">✅ Generate Card</button>
+            <button class="download-btn" onclick="downloadCard()">⬇️ Download PNG</button>
+        </center>
+
+        <div class="preview">
+            <canvas id="canvas" width="750" height="480"></canvas>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let templateImg = new Image();
+
+        // আপনার খালি ছবির নাম (একই ফোল্ডারে থাকতে হবে)
+        templateImg.src = './blank_nid.jpg';
+
+        templateImg.onload = () => {
+            canvas.width = templateImg.width;
+            canvas.height = templateImg.height;
+            generateCard(); // প্রথমবার লোড হলে অটো দেখাবে
+        };
+
+        function generateCard() {
+            if (!templateImg.complete) {
+                alert("খালি ছবি লোড হচ্ছে... একটু পর আবার চাপুন");
+                return;
+            }
+
+            // ছবি আবার ড্র করুন
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(templateImg, 0, 0);
+
+            const banglaName = document.getElementById('banglaName').value;
+            const englishName = document.getElementById('englishName').value;
+            const dob = document.getElementById('dob').value;
+            const nid = document.getElementById('nid').value;
+
+            // ================== টেক্সটের পজিশন (আপনার ছবি অনুযায়ী) ==================
+            ctx.font = '29px "Kalpurush", "Noto Sans Bengali", sans-serif';
+            ctx.fillStyle = '#000000';
+            ctx.fillText(banglaName, 255, 148);   // বাংলা নাম
+            ctx.fillText(englishName, 255, 188);  // ইংরেজি নাম
+
+            ctx.font = '29px Arial Black';
+            ctx.fillStyle = '#ff0000';
+            ctx.fillText(dob, 255, 355);          // Date of Birth (লাল)
+            ctx.fillText(nid, 255, 392);          // NID Number (লাল)
+        }
+
+        function downloadCard() {
+            const link = document.createElement('a');
+            link.download = 'NID_Card_' + document.getElementById('nid').value + '.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // এন্টার চাপলে জেনারেট হবে
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') generateCard();
+        });
+    </script>
+</body>
+</html>
